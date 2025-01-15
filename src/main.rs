@@ -1,13 +1,13 @@
 use aes_gcm::{Aes256Gcm, Key, Nonce};
 use aes_gcm::aead::{Aead, KeyInit, generic_array::typenum::U12};
 use rand::RngCore;
-use hmac::Hmac; // Add this for Hmac usage with pbkdf2
+use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use sha2::Sha256;
 use serde::{Serialize, Deserialize};
 use std::io::{self, Write};
 use base64;
-use rand::Rng; // Add this for the gen_range method
+use rand::Rng;
 
 #[derive(Serialize, Deserialize)]
 struct PasswordEntry {
@@ -26,7 +26,7 @@ struct EncryptedEntry {
 fn derive_key(password: &str, salt: &[u8]) -> Key<Aes256Gcm> {
     let mut key = [0u8; 32]; // 256-bit key for AES-256
     pbkdf2::<Hmac<Sha256>>(password.as_bytes(), salt, 100_000, &mut key);
-    *Key::<Aes256Gcm>::from_slice(&key) // Specify the key size explicitly
+    *Key::<Aes256Gcm>::from_slice(&key)
 }
 
 fn encrypt_data(plaintext: &str, key: &Key<Aes256Gcm>, nonce: &Nonce<U12>) -> Vec<u8> {
@@ -53,7 +53,7 @@ fn generate_password(length: usize, include_symbols: bool) -> String {
     let mut rng = rand::thread_rng();
     (0..length)
         .map(|_| {
-            let idx = rng.gen_range(0..all_chars.len()); // Fix missing gen_range method
+            let idx = rng.gen_range(0..all_chars.len());
             all_chars.chars().nth(idx).unwrap()
         })
         .collect()
